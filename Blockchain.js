@@ -8,32 +8,38 @@ const utf8ToBytes = require('ethereum-cryptography/utils').utf8ToBytes;
 
 class Block {
     constructor(data){
-        this.data = data;      // Here we simplify data, let it be just a simple string
+        this.data = data;
         this.previousHash = null;
     }
 
     toHash(){
         const hashBytes = utf8ToBytes(this.data + this.previousHash);
-        return SHA256(hashBytes);        // a hash as byte array
+        return SHA256(hashBytes);
     }
 }
 
 
 class Blockchain {
     constructor() {
-        
         this.chain = [
-             /* TODO 1: Create the genesis block here */ 
-            ];
+            new Block("Genesis block")
+        ];
     }
 
     addBlock(block){
-        // TODO 2 Compute block.previousHash = previousBlock.toHash()
-        this.chain.push(block)
+        const previousBlock = this.chain[this.chain.length - 1];
+        block.previousHash = previousBlock.toHash();
+        this.chain.push(block);
     }
 
     isValid(){
-        // TODO 3 Check every block previous hash
+        for (let i = 1; i < this.chain.length; i++) {
+            const expected = this.chain[i - 1].toHash();
+            const actual = this.chain[i].previousHash;
+            if (actual === null || expected.toString() !== actual.toString()) {
+                return false;
+            }
+        }
         return true;
     }
 }

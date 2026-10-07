@@ -35,9 +35,6 @@ class MerkleTree {
         }
     }
 
-    /** Merkle proof  
-     * returns: chain of complimentary hashes, e.g. for index=0 [B, CD, EFGH]
-    */
     getProof(index, layer = this.leaves, proof = []) {
         if (layer.length === 1) return proof;
         const newLayer = [];
@@ -68,7 +65,11 @@ class MerkleTree {
 
 
 function verifyProof(proof, nodeHash, rootHash) {
-    // TODO Verify proof chain
+    let hash = nodeHash;
+    for (const p of proof) {
+        hash = p.left ? concatHashes(p.hash, hash) : concatHashes(hash, p.hash);
+    }
+    return hash === rootHash;
 }
 
 
